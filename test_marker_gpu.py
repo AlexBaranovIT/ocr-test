@@ -89,17 +89,23 @@ def run_pymupdf(pdf_path):
 
 
 def main():
-    pdf_path = sys.argv[1] if len(sys.argv) > 1 else "sample_papers/2022 June P1 (Solutions).pdf"
+    # Parse arguments
+    args = sys.argv[1:]
+    pages = None
+    pdf_path = "sample_papers/2022 June P1 (Solutions).pdf"
+
+    if "--pages" in args:
+        idx = args.index("--pages")
+        pages = [int(p) - 1 for p in args[idx + 1:]]  # convert to 0-indexed
+        # PDF path is before --pages if provided
+        if idx > 0:
+            pdf_path = args[0]
+    elif args:
+        pdf_path = args[0]
 
     if not os.path.exists(pdf_path):
         print(f"File not found: {pdf_path}")
         sys.exit(1)
-
-    # Check for --pages flag
-    pages = None
-    if "--pages" in sys.argv:
-        idx = sys.argv.index("--pages")
-        pages = [int(p) - 1 for p in sys.argv[idx + 1:]]  # convert to 0-indexed
 
     pdf_name = Path(pdf_path).stem
     output_dir = f"output/{pdf_name}"
