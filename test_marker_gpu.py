@@ -43,9 +43,19 @@ def run_marker(pdf_path, output_dir):
     from marker.models import create_model_dict
     from marker.config.parser import ConfigParser
 
-    config_parser = ConfigParser({"output_format": "markdown"})
+    # Lower batch sizes to fit in 8GB VRAM
+    config_parser = ConfigParser({
+        "output_format": "markdown",
+    })
+
+    config_dict = config_parser.generate_config_dict()
+    # Reduce batch sizes to prevent OOM on 8GB GPUs
+    for key in config_dict:
+        if hasattr(config_dict[key], 'batch_size'):
+            config_dict[key].batch_size = 4
+
     converter = PdfConverter(
-        config=config_parser.generate_config_dict(),
+        config=config_dict,
         artifact_dict=create_model_dict(),
     )
 
