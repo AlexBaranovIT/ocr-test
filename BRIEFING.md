@@ -86,3 +86,38 @@ The Surya text recognition model inside Marker needs to be fine-tuned on handwri
 6. **What does success look like?** — Target accuracy metrics, how we measure them, and what the end product delivers (structured text output from any student paper).
 
 Make it investor-friendly: technically accurate but understandable to someone who isn't an ML engineer. Include the test results from this briefing as evidence that the base approach works.
+
+---
+
+## Next Steps — Roadmap
+
+### Phase 1: Data Collection
+- Collect 50+ real student papers (scanned/photographed) with handwritten solutions across different subjects, handwriting styles, and difficulty levels.
+- Build a script that automatically crops handwritten regions from full pages using Marker's layout detection (which already works well).
+- Organize crops into a labeled dataset: each image paired with the correct LaTeX transcription.
+
+### Phase 2: Data Labeling
+- Use a vision API (Claude or GPT-4o) as a one-time cost to label the cropped handwritten images with correct LaTeX. Estimated cost: $20-50 for 1000+ labeled samples.
+- Supplement with public datasets: CROHME (handwritten math recognition competition data) and HME100K.
+- Generate synthetic training data: render LaTeX equations in handwriting-style fonts with augmentations (rotation, noise, ink variation, skew) to simulate messy student writing.
+- Target: 5,000+ labeled image-to-LaTeX pairs before fine-tuning begins.
+
+### Phase 3: Fine-Tuning
+- Fine-tune the Surya text recognition model on our handwritten math dataset.
+- Focus on the weak points identified in testing: fractions, square roots, exponents, subscripts, and messy handwriting.
+- Evaluate on a held-out test set of real student papers (not used in training) to measure accuracy.
+- Iterate: review failures, add more training data for problem areas, retrain.
+
+### Phase 4: Integration & Pipeline
+- Integrate the fine-tuned model back into the Marker pipeline.
+- Build the full production pipeline: PDF in → structured Markdown + LaTeX out.
+- Optimize for batch processing (handle hundreds of papers efficiently).
+- Set up deployment on dedicated hardware (Mac Mini M4 Pro or GPU server).
+
+### Phase 5: Evaluation & Deployment
+- Benchmark against the API-based approach (Claude/GPT-4o vision) for accuracy comparison.
+- Target: 90%+ accuracy on handwritten math recognition across varied handwriting styles.
+- Deploy to production and begin processing papers at scale.
+
+### Immediate Next Action
+**Build the data collection pipeline** — a script that takes a folder of student paper PDFs, runs Marker's layout detection to find handwritten regions, crops them, and saves them as individual images ready for labeling. This is the foundation everything else depends on.
